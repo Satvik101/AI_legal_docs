@@ -1,52 +1,33 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import axios from "axios";
 
-function App() {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [document, setDocument] = useState(null);
+export default function Home() {
+  const [input, setInput] = useState("");
+  const [response, setResponse] = useState("");
 
-  const generateDocument = async () => {
+  const handleGenerate = async () => {
     try {
-      const response = await axios.post("http://localhost:8000/generate/", {
-        title,
-        description,
-      });
-      setDocument(response.data);
+      const res = await axios.post("http://127.0.0.1:8000/generate", { prompt: input });
+      setResponse(res.data.output);
     } catch (error) {
-      console.error("Error generating document:", error);
+      console.error("Error:", error);
     }
   };
 
   return (
-    <div style={{ textAlign: "center", padding: "50px" }}>
-      <h1>AI-Powered Legal Document Generator</h1>
-      <input
-        type="text"
-        placeholder="Document Title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        style={{ padding: "10px", margin: "10px", width: "300px" }}
-      />
+    <div style={{ padding: "20px" }}>
+      <h1>AI Legal Document Generator</h1>
       <textarea
-        placeholder="Describe the document..."
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        style={{ padding: "10px", margin: "10px", width: "300px", height: "100px" }}
+        placeholder="Enter your document details..."
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        rows={5}
+        cols={50}
       />
       <br />
-      <button onClick={generateDocument} style={{ padding: "10px 20px" }}>
-        Generate Document
-      </button>
-
-      {document && (
-        <div style={{ marginTop: "20px", textAlign: "left", maxWidth: "600px", margin: "auto" }}>
-          <h2>{document.title}</h2>
-          <p>{document.content}</p>
-        </div>
-      )}
+      <button onClick={handleGenerate}>Generate</button>
+      <h2>Generated Document:</h2>
+      <p>{response}</p>
     </div>
   );
 }
-
-export default App;
